@@ -1,0 +1,61 @@
+*los errores se manejan igual que la practica anterior.
+* como se agrego la descripcion a las fotos, al subir fotos de perfil estan dejando descripcion en blanco?
+
+NUEVOS:
+
+/logincamara
+
+se envia un form con los atributos:
+	-nombre_usuario
+	-password
+	-photo  --- esta estara en formato png
+Se espera una respuesta con formato:
+	{usuario_id: "id" }
+	
+/traducirtexto
+
+se envia un json con atributos
+	{ idioma: "1" -- este sera un string pero con numeros 1, 2,3 dependiendo la cantidad de idiamos a implementar
+	  texto: "cadena de texto de descripcion"}
+
+se espera una respuesta con el formato:
+
+	{traduccion: "cadena traducida"}
+
+
+
+CAMBIOS:
+
+/usuario/${id_user} 
+
+La respuesta de este enpoint ahora debe contener:
+
+	{nombre_usuario:"nombre",
+	 nombre_completo:"completo",
+	 foto_url: "urlfoto",
+	 analisis_foto: "analisis"}
+
+analisis_foto es una cadena de texto, sin \n, solo con espacios que tendra los tags que se encontraron al analizar la foto de perfil,ejemplo:
+
+	analisis_foto: "hombre 25 años ...."
+
+
+
+
+/album/${selectedAlbum}/foto
+
+ahora el enpoint anterior debe cambiar a : 
+/cargarfoto, ya que los albumes se crean en el backend segun el analisis de la imagen enviada:
+
+se enviara un form con  los atributos:
+	{foto: "imagen"
+	 nombre: "nombreimg"
+	 descripcion: "descripcion imagen"
+	}
+
+
+
+
+
+
+

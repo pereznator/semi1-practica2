@@ -1,0 +1,18 @@
+html,body,#root{
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color:#fff;
+}
+.nav-pading{
+  padding: 0 20px;
+}
+.nav-margin{
+  margin: 0 10px;
+}
+.navbar-nav .nav-link.active {
+  background-color: #007bff; /* Cambiar al color de primary */
+  border-radius: 10px; /* Agregar bordes redondeados */
+}
