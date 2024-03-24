@@ -1,0 +1,5 @@
+boto3
+Flask
+flask-cors
+python-dotenv
+PyMySQL
