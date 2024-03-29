@@ -144,16 +144,28 @@ def iniciar_sesion():
 
 @app.route('/usuario/<int:idUsuario>',methods=["GET"])
 def datos_personales(idUsuario):
-    id = session.get('usuario_id')
+    # id = session.get('usuario_id')
+    id = idUsuario
     if id:
         tupla_datos = bd.Obtener_Datos_Personales(id)
-        Foto_Actual = bd.Obtener_Foto_Actual(tupla_datos[4])
+        Foto_Actual = bd.obtener_foto_por_id(tupla_datos[4])
+        nombre_archivo = Foto_Actual[4].split("/")[-1]
+
+        response = Cliente_Rek.detect_labels(
+          Image = {
+            'S3Object': { 'Bucket': 'practica1-g11-imagenes', 'Name': 'Fotos_Perfil/' + nombre_archivo }
+          }
+        )
+
+        labels = [label['Name'] for label in response['Labels']]
+
         res = {
         'usuario_id':tupla_datos[0],
         'nombre_usuario': tupla_datos[1],
         'nombre_completo': tupla_datos[2],
         'password': tupla_datos[3],
-        'foto_url': Foto_Actual
+        'foto_url': Foto_Actual[4],
+        'analisis_foto': " ".join(labels)
         }
         return jsonify(res), 200
     else:
@@ -355,7 +367,7 @@ def chatbot_escribir():
     if not 'mensaje' in parametros:
       return jsonify({'error': 'no se encontro el mensaje'}), 400
     
-    mensaje = parametros['mensaje']
+    mensaje = str(parametros['mensaje'])
 
     if len(mensaje) == 0:
       return jsonify({'error': 'El mensaje debe tener por lo menos un caracter.'}), 400
