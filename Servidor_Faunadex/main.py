@@ -23,9 +23,14 @@ translate_secret_access_key = os.getenv("TRANSLATE_SECRET_ACCESS_KEY")
 s3_access_key_id = os.getenv("S3_ACCESS_KEY_ID") 
 s3_secret_access_key = os.getenv("S3_SECRET_ACCESS_KEY") 
 
+lex_access_key_id = os.getenv("LEX_ACCESS_KEY_ID")
+lex_secret_access_key = os.getenv("LEX_SECRET_ACCESS_KEY")
+
 Cliente_Rek = boto3.client('rekognition', region_name='us-east-1', aws_access_key_id=rek_access_key_id, aws_secret_access_key=rek_secret_access_key)
 
 Cliente_Translate = boto3.client('translate', region_name='us-east-1', aws_access_key_id=translate_access_key_id, aws_secret_access_key=translate_secret_access_key)
+
+Cliente_Lex = boto3.client("lexv2-runtime", region_name='us-east-1', aws_access_key_id=lex_access_key_id, aws_secret_access_key=lex_secret_access_key)
 
 @app.route('/registrar',methods=["POST"])
 def registrar_usuario():
@@ -331,6 +336,46 @@ def traducir():
         except:
             res = "Error al extraer texto"
             return res, 404
+
+@app.route("/chatbot", methods=["POST"])
+def chatbot_escribir():
+  try:
+
+    sessionId = session.get('usuario_id')
+    if sessionId == None:
+      sessionId = 0
+      # return jsonify({'error': 'id del usuario no encontrado'}), 400
+
+    idStr = str(sessionId)
+
+    if sessionId < 10:
+      idStr = '0' + idStr
+
+    parametros = request.get_json(force=True)
+    if not 'mensaje' in parametros:
+      return jsonify({'error': 'no se encontro el mensaje'}), 400
+    
+    mensaje = parametros['mensaje']
+
+    if len(mensaje) == 0:
+      return jsonify({'error': 'El mensaje debe tener por lo menos un caracter.'}), 400
+
+    respuesta = Cliente_Lex.recognize_text(
+        botId='YUOI7YAC3Z',
+        botAliasId='Y5Q2CUJM1Q',
+        localeId='es_ES',
+        sessionId=idStr,
+        text=mensaje
+    )
+
+    print("[[RESPUESTA]]", respuesta)
+    if not 'messages' in respuesta:
+      return jsonify({'error': 'el chatbot no funciono'}), 500
+
+    return jsonify(respuesta['messages']), 200
+  except Exception as error:
+    return jsonify({'error': str(error)}), 500 
+
 
 @app.route('/check')
 def chequeo():
